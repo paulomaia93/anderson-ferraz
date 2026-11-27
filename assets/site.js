@@ -33,6 +33,34 @@ topbar.addEventListener('keydown', event => {
   }
 });
 
+const caseDialog = document.querySelector('#case-dialog');
+
+if (typeof caseDialog?.showModal === 'function') {
+  const caseCompany = document.querySelector('#case-dialog-company');
+  const caseTitle = document.querySelector('#case-dialog-title');
+  const caseContent = document.querySelector('#case-dialog-content');
+
+  document.querySelectorAll('#cases details').forEach(details => {
+    const card = details.closest('article');
+    const summary = details.querySelector('summary');
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'button case-trigger';
+    trigger.textContent = summary.textContent;
+    trigger.setAttribute('aria-label', summary.getAttribute('aria-label'));
+    trigger.setAttribute('aria-haspopup', 'dialog');
+    trigger.setAttribute('aria-controls', caseDialog.id);
+    trigger.addEventListener('click', () => {
+      caseCompany.textContent = card.querySelector('.eyebrow').textContent;
+      caseTitle.textContent = card.querySelector('h3').textContent;
+      caseContent.replaceChildren(...Array.from(details.querySelectorAll('p'), paragraph => paragraph.cloneNode(true)));
+      caseDialog.showModal();
+    });
+    details.before(trigger);
+    details.hidden = true;
+  });
+}
+
 const viewer = document.querySelector('#visualizador');
 const largeImage = document.querySelector('#imagem-ampliada');
 
@@ -47,7 +75,10 @@ if (typeof viewer.showModal === 'function') {
       viewer.showModal();
     });
   });
-  viewer.addEventListener('click', event => {
-    if (event.target === viewer) viewer.close();
-  });
 }
+
+document.querySelectorAll('dialog').forEach(dialog => {
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) dialog.close();
+  });
+});
